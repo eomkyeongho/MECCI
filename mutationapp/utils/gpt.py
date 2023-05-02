@@ -1,9 +1,10 @@
 import openai
 import random
+import requests
 
-openai.api_key = "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"
+openai.api_key = ""
 
-subCommandList = ['"openstack_compute_secgroup_v2" "icmp" 블럭 제거', '"openstack_compute_secgroup_v2" "http" 블럭 제거', '"openstack_compute_secgroup_v2" "https" 블럭 추가', '"openstack_compute_secgroup_v2" "telnet" 블럭 추가', '"openstack_compute_secgroup_v2" "custom_port" from_port=1111, to_port=1111인 블럭 추가']
+subCommandList = ['"openstack_compute_secgroup_v2" "icmp" 블럭 제거', '"openstack_compute_secgroup_v2" "http" 블럭 제거', '"openstack_compute_secgroup_v2" "https" 블럭 추가', '"openstack_compute_secgroup_v2" "telnet" 블럭 추가', '"openstack_compute_secgroup_v2" "custom_port" from_port=34634, to_port=34634인 블럭 추가']
 
 head = open("mutationapp/utils/iac_head.tf", mode='r')
 head = head.read()
@@ -13,7 +14,8 @@ tail = tail.read()
 def mutationIaC():
     command = tail + "\n위 코드를 다음과 같은 규칙 하에 수정한 코드를 보여줘\n" 
 
-    ret = f""
+    origin = head + tail
+    mutation = f""
 
     commands = []
     for i in range(5):
@@ -29,11 +31,14 @@ def mutationIaC():
     try:
         completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": f"{command}"}])
         assistant_content = completion.choices[0].message["content"].strip()
-        ret = f"{head + assistant_content}"
+        mutated = f"{head + assistant_content}"
     except:
-        ret = f"gpt error"
+        mutated = f"Request Token Exceeded"
 
-    return f"{head + tail}", ret
+    data = {"left" : f"{origin}", "right" : f"{mutated}", "diff_level" : "word"}
+    response = requests.post("https://api.diffchecker.com/public/text?output_type=html&email=rudgh9242@naver.com", json = data)
+    
+    return origin , mutated, response.text
 
 # while True:
 #     try:
