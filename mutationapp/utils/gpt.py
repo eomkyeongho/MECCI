@@ -4,7 +4,7 @@ import requests
 
 openai.api_key = ""
 
-subCommandList = ['"openstack_compute_secgroup_v2" "icmp" 블럭 제거', '"openstack_compute_secgroup_v2" "http" 블럭 제거', '"openstack_compute_secgroup_v2" "https" 블럭 추가', '"openstack_compute_secgroup_v2" "telnet" 블럭 추가', '"openstack_compute_secgroup_v2" "custom_port" from_port=34634, to_port=34634인 블럭 추가']
+subCommandList = ['"openstack_compute_secgroup_v2" "icmp"인 블럭 제거', '"openstack_compute_secgroup_v2" "http"인 블럭 제거', '"openstack_compute_secgroup_v2" "https"인 블럭 추가', '"openstack_compute_secgroup_v2" "telnet"인 블럭 추가', '"openstack_compute_secgroup_v2" "custom_port" from_port=34634, to_port=34634인 블럭 추가', '"openstack_compute_instance_v2" "instance_2"인 블럭 추가']
 
 head = open("mutationapp/utils/iac_head.tf", mode='r')
 head = head.read()
