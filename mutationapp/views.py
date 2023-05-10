@@ -3,12 +3,17 @@ from django.http import JsonResponse
 from .utils import gpt
 import os
 import time
+import random
 
 # Create your views here.
-def index(request):
+def mutateCode(request):
     f = open("mecci-vue/src/assets/graph.svg", "w").close()
-    data = {}
-    data["origin"], data["mutated"], data["diff"] = gpt.mutationIaC()
+    data = {"origin": "", "mutated" : "", "diff" : ""}
+    fileName = request.GET.get("filename")
+    if fileName == "":
+        return JsonResponse(data)
+    
+    data["mutated"], data["diff"] = gpt.mutateIaC(fileName)
     f = open("main.tf", 'w')
     f.write(data["mutated"])
     f.close()
@@ -17,7 +22,44 @@ def index(request):
         if os.system(command) == 0:
             continue
         else:
-            print("ERROR")
+            print("os.system() error")
             break
     
     return JsonResponse(data)
+
+def getOrigin(request):
+    data = {"origin" : "", "filename" : ""}
+    instance = request.GET.get("instance")
+    if instance == 0 :
+        return JsonResponse(data)
+    
+    files = [f for f in os.listdir("mutationapp/utils") if f"iac_{instance}_" in f]
+    fileName = random.choice(files)
+    print(f"selected {fileName}")
+    tail = open(f"mutationapp/utils/{fileName}", mode='r')
+    tail = tail.read()
+    data["origin"] = gpt.head + tail
+    data["filename"] = fileName
+
+    return JsonResponse(data)
+
+def validate(request):
+    filename = request.GET.get("filename")
+    filename = filename.replace('.tf', '')
+    filename = filename.rstrip(filename[-1])
+
+    files = [f for f in os.listdir("mutationapp/utils") if filename in f]
+    index = 2
+
+    while True:
+        if f"{filename}{index}.tf" not in files:
+            break
+        index += 1
+
+    if os.system(f"move /Y mutatedIaC mutationapp/utils/{filename}{index}.tf") == 0:
+        print("Succefully add mutated code to the IaC pool")
+
+    time.sleep(5)
+    
+    return HttpResponse("Succefully add mutated code to the IaC pool")
+        
