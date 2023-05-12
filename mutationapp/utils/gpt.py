@@ -2,7 +2,7 @@ import openai
 import random
 import requests
 
-openai.api_key = "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"
+openai.api_key = ""
 
 subCommandList = ['만약 위 코드에 "openstack_compute_secgroup_v2" "https" 블럭이 없다면 해당 블럭을 추가해줘', 
                   '만약 위 코드에 "openstack_compute_secgroup_v2" "icmp" 블럭이 없다면 해당 블럭을 추가해줘', 

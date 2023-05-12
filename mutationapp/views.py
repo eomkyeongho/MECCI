@@ -62,4 +62,12 @@ def validate(request):
     time.sleep(5)
     
     return HttpResponse("Succefully add mutated code to the IaC pool")
+
+def showIaCList(request):
+    files = ['📄' + f for f in os.listdir("mutationapp/utils") if ".tf" in f]
+    files.remove('📄iac_head.tf')
+    data = {}
+    data["filelist"] = files
+    
+    return JsonResponse(data)
         
