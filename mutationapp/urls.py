@@ -5,5 +5,5 @@ urlpatterns = [
     path('mutate', views.mutateCode),
     path('origin', views.getOrigin),
     path('validate', views.validate),
-    path('iac-list', views.showIaCList)
+    path('iac-list', views.showIaCList),
 ]
