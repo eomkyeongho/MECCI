@@ -12,7 +12,7 @@ provider openstack {
 	user_name		= "admin"
 	tenant_name		= "admin"
 	password		= "secret"
-	auth_url		= "http://172.30.1.17/identity"
+	auth_url		= "http://121.135.134.175/identity"
 }
 
 # Image creation

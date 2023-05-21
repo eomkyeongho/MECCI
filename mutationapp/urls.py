@@ -6,4 +6,6 @@ urlpatterns = [
     path('origin', views.getOrigin),
     path('validate', views.validate),
     path('iac-list', views.showIaCList),
+    path('terraform-apply', views.applyIaC),
+    path('test', views.test)
 ]

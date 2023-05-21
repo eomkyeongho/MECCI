@@ -2,20 +2,12 @@ import openai
 import random
 import requests
 
-openai.api_key = ""
+openai.api_key = "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"
 
-subCommandList = ['만약 위 코드에 "openstack_compute_secgroup_v2" "https" 블럭이 없다면 해당 블럭을 추가해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "icmp" 블럭이 없다면 해당 블럭을 추가해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "ssh" 블럭이 없다면 해당 블럭을 추가해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "custom_port" 블럭이 없다면 해당 블럭을 추가해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "http" 블럭이 없다면 해당 블럭을 추가해줘',
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "telnet" 블럭이 없다면 해당 블럭을 추가해줘',
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "https" 블럭이 있다면 해당 블럭을 제거해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "icmp" 블럭이 있다면 해당 블럭을 제거해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "ssh" 블럭이 있다면 해당 블럭을 제거해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "custom_port" 블럭이 있다면 해당 블럭을 제거해줘', 
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "http" 블럭이 있다면 해당 블럭을 제거해줘',
-                  '만약 위 코드에 "openstack_compute_secgroup_v2" "telnet" 블럭이 있다면 해당 블럭을 제거해줘']
+protocolList = [ '"http"', '"https"', '"icmp"', '"ssh"', '"custom_port"', '"telnet"' ]
+
+prefix = '만약 위 코드에서 `"openstack_compute_secgroup_v2" '
+suffixes = ['` 블럭이 존재한다면, 해당 블럭을 제거해줘\n', '` 블럭이 존재하지 않는다면, 해당 블럭을 추가해줘\n']
 
 head = open("mutationapp/utils/iac_head.tf", mode='r')
 head = head.read()
@@ -28,16 +20,16 @@ def mutateIaC(fileName):
     origin = head + tail
     mutation = f""
 
-    commands = []
-    for i in range(10):
-        comm = random.choice(subCommandList)
-        if comm not in commands:
-            commands.append(comm)
+    protocols = []
+    for i in range(5):
+        protocol = random.choice(protocolList)
+        if protocol not in protocols:
+            protocols.append(protocol)
 
-    print(commands)
-
-    for c in commands:
-        command += f"{c}\n"
+    for p in protocols:
+        suffix = random.choice(suffixes)
+        print(prefix + p + suffix)
+        command += prefix + p + suffix
     
     command += "단, 코드만 보여주고 아무 말도 하지 말아줘."
 
@@ -52,23 +44,6 @@ def mutateIaC(fileName):
         mutated = f"Request Token Exceeded"
 
     data = {"left" : f"{origin}", "right" : f"{mutated}", "diff_level" : "word"}
-    response = requests.post("https://api.diffchecker.com/public/text?output_type=html&email=rudgh9242@naver.com", json = data)
+    diff = requests.post("https://api.diffchecker.com/public/text?output_type=html&email=rudgh9242@naver.com", json = data)
     
-    return mutated, response.text
-
-# while True:
-#     try:
-#         user_content = input("user : ")
-#         messages.append({"role": "user", "content": f"{command}"})
-
-#         completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-
-#         assistant_content = completion.choices[0].message["content"].strip()
-
-#         messages.append({"role": "assistant", "content": f"{assistant_content}"})
-
-#         print(f"GPT : {assistant_content}")
-#     except KeyboardInterrupt:
-#         break
-#     except:
-#         print("error!")
+    return mutated, diff.text

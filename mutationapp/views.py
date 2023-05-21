@@ -4,6 +4,7 @@ from .utils import gpt
 import os
 import time
 import random
+import requests
 
 # Create your views here.
 def mutateCode(request):
@@ -17,12 +18,14 @@ def mutateCode(request):
     f = open("main.tf", 'w')
     f.write(data["mutated"])
     f.close()
-    commands = ["terraform init", "terraform graph | dot -Tsvg > graph.svg", "move /Y graph.svg mecci-vue/src/assets/graph.svg", "del main.tf"]
+    commands = ["terraform init", "terraform graph | dot -Tsvg > graph.svg", "move /Y graph.svg mecci-vue/src/assets/graph.svg"]
     for command in commands:
         if os.system(command) == 0:
             continue
         else:
             print("os.system() error")
+            data["mutated"] = "terraform init failed"
+            data["diff"] = ""
             break
     
     return JsonResponse(data)
@@ -70,4 +73,30 @@ def showIaCList(request):
     data["filelist"] = files
     
     return JsonResponse(data)
+
+def test(request):
+    f = open('main.tf', 'r')
+    maintf = f.read()
+    f.close()
+    requests.post("http://localhost:8000/terraform-apply", data={'iac' : maintf})
+
+    return HttpResponse("applyIaC")
+
+def applyIaC(request):
+    maintf = request.POST.get("iac")
+
+    f = open('main.tf', 'w')
+    f.write(maintf)
+    f.close()
+
+    commands = ['terraform init', 'terraform apply -auto-approve']
+
+    status = "terraform apply success"
+
+    for command in commands:
+        if os.system(command) != 0:
+            status = "terraform apply fail"
+            break
+
+    return HttpResponse(status)
         

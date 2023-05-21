@@ -18,7 +18,7 @@
             <v-btn class="ma-1" color="grey-darken-1" @click="render = 0"> ← </v-btn>
             Graph
           </div>
-          <v-img :src="require('./assets/graph.svg')"></v-img>
+          <pdf src="./assets/graph.pdf"></pdf>
         </v-card>
     </v-container>
       <v-container class= "mt-15" v-if="render == 3">
@@ -45,12 +45,12 @@
             <v-textarea v-model="mutated" rows="20" readonly></v-textarea>
           </v-col>
           <v-col cols="12" sm="2" >
-            <v-select class = "mt-7 ml-5" v-model="vulnerability" :items="['Add', 'Keep']" label="Vulnerability"></v-select>
-            <v-btn class = "mx-5 my-1" color="green-lighten-2" v-on:click="mutate()" min-height="50" min-width="200">{{ mutating }}</v-btn>
+            <v-btn class = "mx-5 mt-10 mb-1" color="green-lighten-2" v-on:click="mutate()" min-height="50" min-width="200">{{ mutating }}</v-btn>
+            <v-btn class = "mx-5 my-1" color="green-lighten-2" min-height="50" min-width="200" @click="render = 3; getIaCList();">IaC Pool</v-btn>
             <v-btn v-if="isMutated" class = "mx-5 my-1" color="red-lighten-1" min-height="50" min-width="200" @click="render = 1">Show Diff</v-btn>
-            <v-btn v-if="isMutated" class = "mx-5 my-1" color="blue-darken-2" min-height="50" min-width="200" @click="render = 2">Show Graph</v-btn>
+            <v-btn v-if="isMutated" class = "mx-5 my-1" color="blue-darken-1" min-height="50" min-width="200" @click="render = 2">Show Graph</v-btn>
+            <v-btn v-if="isMutated" class = "mx-5 my-1" color="blue-darken-1" min-height="50" min-width="200" @click="showTopology()">Show Topology</v-btn>
             <v-btn v-if="isMutated" class = "mx-5 my-1" color="purple-darken-1" min-height="50" min-width="200" @click="validate()">{{ validating}}</v-btn>
-            <v-btn class = "mx-5 my-1" color="cyan-lighten-4" min-height="50" min-width="200" @click="render = 3; getIaCList();">IaC Pool</v-btn>
           </v-col>
         </v-row>
     </v-container>
@@ -59,6 +59,7 @@
 
 <script>
 import axios from 'axios';
+
 
 export default {
   name: 'App',
@@ -121,6 +122,9 @@ export default {
         this.fileList = res["data"]["filelist"];
         console.log(this.fileList);
       })
+    },
+    showTopology() {
+      window.open("http://121.135.134.175/dashboard/project/network_topology/#!#close");
     }
   }
 }
