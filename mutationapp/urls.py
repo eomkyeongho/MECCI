@@ -2,10 +2,9 @@ from django.urls import path
 from mutationapp import views
 
 urlpatterns = [
-    path('mutate', views.mutateCode),
-    path('origin', views.getOrigin),
-    path('validate', views.validate),
     path('iac-list', views.showIaCList),
-    path('terraform-apply', views.applyIaC),
-    path('test', views.test)
+    path('iac', views.showIaCDetail),
+    path('random-iac', views.randomChoiceIaC),
+    path('mutation', views.mutateIaC),
+    path('terraform-apply', views.terraformApply)
 ]

@@ -50,7 +50,8 @@
             <v-btn v-if="isMutated" class = "mx-5 my-1" color="red-lighten-1" min-height="50" min-width="200" @click="render = 1">Show Diff</v-btn>
             <v-btn v-if="isMutated" class = "mx-5 my-1" color="blue-darken-1" min-height="50" min-width="200" @click="render = 2">Show Graph</v-btn>
             <v-btn v-if="isMutated" class = "mx-5 my-1" color="blue-darken-1" min-height="50" min-width="200" @click="showTopology()">Show Topology</v-btn>
-            <v-btn v-if="isMutated" class = "mx-5 my-1" color="purple-darken-1" min-height="50" min-width="200" @click="validate()">{{ validating}}</v-btn>
+            <v-btn v-if="isMutated" class = "mx-5 my-1" color="purple-darken-1" min-height="50" min-width="200" @click="validate()">{{ validating }}</v-btn>
+            <v-btn v-if="isMutated" class = "mx-5 my-1" color="purple-darken-1" min-height="50" min-width="200" @click="apply()">{{ applying }}</v-btn>
           </v-col>
         </v-row>
     </v-container>
@@ -78,7 +79,8 @@ export default {
     vulnerability : "Keep",
     render : 0,
     isMutated : false,
-    fileList : []
+    fileList : [],
+    applying : "Apply"
   }),
   methods:{
     mutate() {
@@ -112,8 +114,8 @@ export default {
       this.validating = "Validating..."
       axios.get("/validate", {params: {filename : this.filename}})
       .then(res => {
-        alert(res["data"])
-        this.validating = "Validate"
+        alert(res["data"]);
+        this.validating = "Validate";
       })
     },
     getIaCList() {
@@ -125,6 +127,14 @@ export default {
     },
     showTopology() {
       window.open("http://121.135.134.175/dashboard/project/network_topology/#!#close");
+    },
+    apply() {
+      this.applying = "applying...";
+      axios.get("/apply")
+      .then(res =>{
+        alert(res["data"]);
+        this.applying = "Apply";
+      })
     }
   }
 }
