@@ -31,7 +31,7 @@ def showIaCDetail(request):
     return JsonResponse(data) 
 
 def randomChoiceIaC(request):
-    data ={}
+    data = {}
 
     fileList = [f for f in os.listdir("mutationapp/iac") if ".tf" in f]
     fileName = random.choice(fileList)
@@ -50,6 +50,10 @@ def mutateIaC(request):
     fileName = request.GET.get('fileName')
 
     data["mutated"], data["diff"] = gpt.mutateIaC(fileName)
+
+    f = open('main.tf', 'w')
+    f.write(data["mutated"])
+    f.close()
     
     return JsonResponse(data)
 
@@ -66,3 +70,32 @@ def terraformApply(request):
         data["result"] = 'fail'
 
     return JsonResponse(data)
+
+def validateIaC(request):
+    data = {}
+
+    f = open('main.tf', 'r')
+    iac = f.read()
+    f.close()
+
+    data["router"] = iac.count('"openstack_networking_router_v')
+    data["subnet"] = iac.count('"openstack_networking_subnet_v')
+    data["instance"] = iac.count('"openstack_compute_instance_v')
+    
+    fileName = f'r{data["router"]}_s{data["subnet"]}_i{data["instance"]}_infra'
+    fileList = [f for f in os.listdir("mutationapp/iac") if ".tf" in f]
+
+    index = 1
+
+    while(True):
+        if f'{fileName}{index}.tf' not in fileList:
+            fileName = f'{fileName}{index}.tf'
+            break
+        index += 1
+
+    f = open(fileName , 'w')
+    f.write(iac)
+    f.close()
+
+    return JsonResponse(data)
+

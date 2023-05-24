@@ -6,5 +6,6 @@ urlpatterns = [
     path('iac', views.showIaCDetail),
     path('random-iac', views.randomChoiceIaC),
     path('mutation', views.mutateIaC),
+    path('validation', views.validateIaC),
     path('terraform-apply', views.terraformApply)
 ]
