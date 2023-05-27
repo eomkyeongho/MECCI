@@ -8,7 +8,7 @@ def terraformApply(request):
 
     maintf = request.POST.get('iac')
 
-    with open('main.tf') as f:
+    with open('main.tf', 'w') as f:
         f.write(maintf)
     
     commands = ['terraform init', 'terraform apply -auto-approve']

@@ -12,7 +12,7 @@ import requests
 def showIaCList(request):
     data = {}
 
-    fileList = [f.replace('.tf', '') for f in os.listdir("mutationapp/iac") if ".tf" in f]
+    fileList = [f.replace('.tf', '') for f in os.listdir("iac") if ".tf" in f]
     
     data["fileList"] = fileList
     
@@ -24,7 +24,7 @@ def showIaCDetail(request):
     fileName = request.GET.get('fileName')
 
     try:
-        iac = open(f'mutationapp/iac/{fileName}.tf', 'r')
+        iac = open(f'iac/{fileName}.tf', 'r')
         data["iac"] = iac.read()
         iac.close()
     except:
@@ -35,12 +35,12 @@ def showIaCDetail(request):
 def randomChoiceIaC(request):
     data = {}
 
-    fileList = [f for f in os.listdir("mutationapp/iac") if ".tf" in f]
+    fileList = [f for f in os.listdir("iac") if ".tf" in f]
     fileName = random.choice(fileList)
 
     data["fileName"] = fileName.replace('.tf', '')
 
-    iac = open(f'mutationapp/iac/{fileName}', 'r')
+    iac = open(f'iac/{fileName}', 'r')
     data["iac"] = iac.read()
     iac.close()
 
@@ -75,7 +75,7 @@ def terraformApply(request):
 def validateIaC(request):
     data = {"result" : 'validated'}
 
-    commands = ['terraform init']
+    commands = ['terraform init', 'terraform validate']
 
     for command in commands:
         if os.system(command) == 0:
@@ -94,7 +94,7 @@ def uploadFile(request):
     
     name = request.POST.get('name')
     if name.find('.tf') == -1 :
-        data["debug"] = 'file type must be .tf'
+        data["message"] = 'file type must be .tf'
     else :
         industry = request.POST.get('industry')
         f = request.FILES.get('file')
@@ -106,7 +106,7 @@ def uploadFile(request):
 
         fileName = f'r{rout}s{subn}i{inst}'
 
-        fileList = [f.replace('.tf', '') for f in os.listdir("mutationapp/iac") if ".tf" in f]
+        fileList = [f.replace('.tf', '') for f in os.listdir("iac") if ".tf" in f]
         index = 1
 
         while(True):
@@ -117,7 +117,7 @@ def uploadFile(request):
         #fileName = iacutils.issueFileName(path ,industry)
         data["fileName"] = fileName
 
-        os.system(f'move "{path}" "mutationapp/iac/{fileName}.tf"')
+        os.system(f'move "{path}" "iac/{fileName}.tf"')
 
     return JsonResponse(data)
 
