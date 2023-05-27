@@ -1,4 +1,5 @@
 import hcl
+import os
 
 instanceDevices = ['openstack_compute_instance_v1', 'openstack_compute_instance_v2']
 subnetDevices = ['openstack_networking_subnet_v1', 'openstack_networking_subnet_v2']
@@ -32,7 +33,24 @@ def validate(path):
     return "validated"
 
 def issueFileName(path, industry):
-    return "temp"
+    info = parseTerraform(path)
+    rout = info["router"]
+    subn = info["subnet"]
+    inst = info["instance"]
+
+    fileName = f'r{rout}s{subn}i{inst}'
+    
+    fileList = [f.replace('.tf', '') for f in os.listdir("iac") if ".tf" in f]
+    index = 1
+
+    while(True):
+        if f'{fileName}-{industry}-{index}' not in fileList:
+            break
+        index += 1
+    
+    fileName = f'{fileName}-{industry}-{index}'
+
+    return fileName
     
 
 

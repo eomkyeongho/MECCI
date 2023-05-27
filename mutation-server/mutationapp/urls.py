@@ -8,5 +8,6 @@ urlpatterns = [
     path('mutation', views.mutateIaC),
     path('validation', views.validateIaC),
     path('terraform-apply', views.terraformApply),
-    path('upload-tf', views.uploadFile)
+    path('upload-tf', views.uploadFile),
+    path('injection', views.injectVulnerability),
 ]

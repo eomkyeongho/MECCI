@@ -110,7 +110,7 @@ def uploadFile(request):
         index = 1
 
         while(True):
-            if f'{fileName}-{index}' not in fileList:
+            if f'{fileName}-{industry}-{index}' not in fileList:
                 break
         
         fileName = f'{fileName}-{industry}-{index}'
@@ -118,6 +118,30 @@ def uploadFile(request):
         data["fileName"] = fileName
 
         os.system(f'move "{path}" "iac/{fileName}.tf"')
+
+    return JsonResponse(data)
+
+def injectVulnerability(request):
+    data = {}
+
+    shList = [sh for sh in os.listdir('.') if ".sh" in sh]
+
+    with open('main.tf', 'r') as f:
+        maintf = f.read()
+    
+    for sh in shList:
+        if maintf.find(f'{sh}') == -1:
+            continue
+        else:
+            script = sh
+            while script == sh:
+                script = random.choice(shList)
+            maintf = maintf.replace(f'{sh}', f'{script}')
+            break
+
+    data["injected"] = maintf
+    with open('tmp/injected.tf', 'w') as f:
+        f.write(maintf)
 
     return JsonResponse(data)
 

@@ -39,11 +39,11 @@ resource "openstack_compute_flavor_v2" "flavor_1" {
 # Router creation
 resource "openstack_networking_router_v2" "router_1" {
     name                = "router_1"
-    external_network_id = "2339497f-b4a8-4e8f-a7e1-92ffe768609a"
+    external_network_id = "5b16677d-b429-4b7e-8edb-6e1c06020db3"
 }
 resource "openstack_networking_router_v2" "router_2" {
     name                = "router_2"
-    external_network_id = "2339497f-b4a8-4e8f-a7e1-92ffe768609a"
+    external_network_id = "5b16677d-b429-4b7e-8edb-6e1c06020db3"
 }
 
 # Network creation
@@ -158,15 +158,16 @@ resource "openstack_compute_instance_v2" "instance_1" {
     image_id        = openstack_images_image_v2.ubuntu1804.id
     flavor_id       = "flavor_1"
 
-    user_data        = file("instance_1.sh")
+    user_data        = file("vuln_webserver_2.sh")
 
     network {
         port        = openstack_networking_port_v2.http.id
     }
+	depends_on		= [openstack_networking_port_v2.http]
 }
 # Add 0 instances with cirros image in the network
 resource "openstack_compute_instance_v2" "instance_2" {
-    count            = 0
+    count            = 1
     name            = "instance_2"
     image_id        = openstack_images_image_v2.cirros.id
     flavor_id       = "42"
@@ -174,9 +175,10 @@ resource "openstack_compute_instance_v2" "instance_2" {
     network {
         name    = openstack_networking_network_v2.private_2.name
     }
+	depends_on	= [openstack_networking_subnet_v2.subnet_2]
 }
 resource "openstack_compute_instance_v2" "instance_3" {
-    count            = 0
+    count            = 1
     name            = "instance_3"
     image_id        = openstack_images_image_v2.cirros.id
     flavor_id       = "42"
@@ -184,4 +186,5 @@ resource "openstack_compute_instance_v2" "instance_3" {
     network {
         name    = openstack_networking_network_v2.private_3.name
     }
+	depends_on	= [openstack_networking_subnet_v2.subnet_3]
 }
