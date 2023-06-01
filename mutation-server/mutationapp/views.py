@@ -25,10 +25,10 @@ def showIaCDetail(request):
 
     try:
         iac = open(f'iac/{fileName}.tf', 'r')
-        data["iac"] = iac.read()
+        data["code"] = iac.read()
         iac.close()
     except:
-        data["iac"] = 'not exist'
+        data["code"] = 'not exist'
 
     return JsonResponse(data) 
 
@@ -41,21 +41,27 @@ def randomChoiceIaC(request):
     data["fileName"] = fileName.replace('.tf', '')
 
     iac = open(f'iac/{fileName}', 'r')
-    data["iac"] = iac.read()
+    data["code"] = iac.read()
     iac.close()
 
     return JsonResponse(data)
 
 def mutateIaC(request):
     data = {}
+    
+    with open("mutationapp/utils/stop_flag","w") as f:
+         f.write("0")
 
     fileName = request.GET.get('fileName')
 
-    data["mutated"], data["diff"] = gpt.mutateIaC(fileName)
-
-    f = open('main.tf', 'w')
-    f.write(data["mutated"])
-    f.close()
+    data["origin"], data["mutated"] = gpt.mutateIaC(fileName)
+    data["mutated"].replace("`","")
+    
+    with open("origin/main.tf","w") as f:
+        f.write(data["origin"])
+    
+    with open('main.tf', 'w') as f:
+        f.write(data["mutated"])
     
     return JsonResponse(data)
 
@@ -66,9 +72,9 @@ def terraformApply(request):
         with open('main.tf', 'r') as f:
             maintf = f.read()
         response = requests.post("http://121.135.134.175:8000/terraform-apply", data={'iac' : maintf})
-        data["result"] = 'success'
+        data["result"] = 'true'
     except:
-        data["result"] = 'fail'
+        data["result"] = 'false'
 
     return JsonResponse(data)
 
@@ -78,7 +84,7 @@ def validateIaC(request):
     commands = ['terraform init', 'terraform validate']
 
     for command in commands:
-        if os.system(command) == 0:
+        if os.system(f'sudo {command}') == 0:
             continue
         else:
             data["result"] = 'fail'
@@ -98,13 +104,13 @@ def uploadFile(request):
     else :
         industry = request.POST.get('industry')
         f = request.FILES.get('file')
-        path = default_storage.save('main.tf', ContentFile(f.read()))
+        path = default_storage.save(name, ContentFile(f.read()))
         info = iacutils.parseTerraform(path)
         rout = info["router"]
         subn = info["subnet"]
         inst = info["instance"]
 
-        fileName = f'r{rout}s{subn}i{inst}'
+        fileName = f'r{rout}-s{subn}-i{inst}'
 
         fileList = [f.replace('.tf', '') for f in os.listdir("iac") if ".tf" in f]
         index = 1
@@ -112,14 +118,18 @@ def uploadFile(request):
         while(True):
             if f'{fileName}-{industry}-{index}' not in fileList:
                 break
+            index = index + 1
         
         fileName = f'{fileName}-{industry}-{index}'
         #fileName = iacutils.issueFileName(path ,industry)
         data["fileName"] = fileName
 
-        os.system(f'move "{path}" "iac/{fileName}.tf"')
+        if os.system(f'mv "{path}" "iac/{fileName}.tf"') == 0:
+            with open(f'iac/{fileName}.tf', 'r') as f:
+                data["code"] = f.read()
 
     return JsonResponse(data)
+
 
 def injectVulnerability(request):
     data = {}
@@ -142,6 +152,70 @@ def injectVulnerability(request):
     data["injected"] = maintf
     with open('tmp/injected.tf', 'w') as f:
         f.write(maintf)
+    with open("main.tf","w") as f:
+        f.write(maintf)
 
     return JsonResponse(data)
 
+
+def choiceIaC(request):
+    data = {}
+
+    infraType=request.GET.get('infraType')
+    routeNum=int(request.GET.get('routeNum'))
+    subnetNum=int(request.GET.get('subnetNum'))
+    instanceNum=int(request.GET.get('instanceNum'))
+    imageType=request.GET.get('imageType')
+
+
+    fileList = [f for f in os.listdir("iac") if ".tf" in f]
+    fileAttribute={}
+
+    for f in fileList:
+        fileAttr=f.split('-')
+        fRouteNum=int(fileAttr[0][1:])
+        fSubnetNum=int(fileAttr[1][1:])
+        fInstanceNum=int(fileAttr[2][1:])
+        fInfra=fileAttr[3]
+
+        key=(fRouteNum,fSubnetNum,fInstanceNum,fInfra)
+        if key not in fileAttribute.keys():
+            fileAttribute[key]=[]
+        fileAttribute[key].append(f)
+
+    try:
+        fileName=random.choice(fileAttribute[(routeNum,subnetNum,instanceNum,infraType)])
+        print(fileName)
+        data["fileName"] = fileName.replace(".tf","")
+        with open(f"iac/{fileName}","r") as iac:
+            data["code"]=iac.read()
+        data["result"]="true"
+    except:
+        data["result"]="false"
+
+    return JsonResponse(data)
+
+
+def visualizeIaC(request):
+    data={}
+    os.system("docker run --rm -it  -v $(pwd)/origin:/src im2nguyen/rover -genImage true")
+    os.system("docker run --rm -it  -v $(pwd):/src im2nguyen/rover -genImage true")
+    os.system("rm -rf ./static/*.svg")
+    os.system("mv ./rover.svg ./static/mutated.svg")
+    os.system("mv ./origin/rover.svg ./static/origin.svg")
+
+    with open("./static/origin.svg","r") as f:
+        data["origin_svg"]=f.read()
+
+    with open("./static/mutated.svg","r") as f:
+        data["mutated_svg"]=f.read()
+    data["result"]="true"
+    
+    return JsonResponse(data)
+
+def stopGenerating(request):
+    data={}
+    with open("mutationapp/utils/stop_flag","w") as f:
+        f.write("1")
+    data["result"]="true"
+    return JsonResponse(data)

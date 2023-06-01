@@ -14,7 +14,7 @@ def terraformApply(request):
     commands = ['terraform init', 'terraform apply -auto-approve']
 
     for command in commands:
-        if os.system(command) == 0:
+        if os.system(f'sudo {command}') == 0:
             continue    
         else:
             data["result"] = 'fail'
