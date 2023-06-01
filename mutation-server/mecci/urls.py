@@ -15,6 +15,36 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+# set async_mode to 'threading', 'eventlet', 'gevent' or 'gevent_uwsgi' to
+# force a mode else, the best mode is selected automatically from what's
+# installed
+
+# def index(request):
+#     global thread
+#     if thread is None:
+#         thread = sio.start_background_task(background_thread)
+#     return HttpResponse(open(os.path.join(basedir, 'static/index.html')))
+
+
+# def background_thread():
+#     """Example of how to send server generated events to clients."""
+#     count = 0
+#     while True:
+#         sio.sleep(10)
+#         count += 1
+#         sio.emit('my_response', {'data': 'Server generated event'},
+#                  namespace='/test')
+
+
+# @sio.event
+# def my_event(sid, message):
+#     sio.emit('my_response', {'data': message['data']}, room=sid)
+    
+#     ...
+    
+#  @sio.event
+# def disconnect(sid):
+#     print('Client disconnected')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
