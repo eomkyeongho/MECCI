@@ -25,17 +25,9 @@ resource "openstack_images_image_v2" "cirros" {
    container_format   = "bare"
    disk_format         = "qcow2"
 }
-resource "openstack_compute_flavor_v2" "flavor_1" {
-    name		= "flavor_1"
-    ram			= "8192"
-    vcpus		= "1"
-    disk		= "20"
-    flavor_id		= "flavor_1"
-    is_public		= "true"
-}
 resource "openstack_networking_router_v2" "router_1" {
     name                = "router_1"
-    external_network_id    = "fffcda80-71c0-402e-8b92-2ff5ad1c9d8c"
+    external_network_id    = "b66b244a-b0a1-4309-9763-9291a5ab5f93"
 }
 resource "openstack_networking_network_v2" "private_1"{
     name            = "private_1"
@@ -52,63 +44,15 @@ resource "openstack_networking_router_interface_v2" "interface_1"{
     router_id    = openstack_networking_router_v2.router_1.id
     subnet_id    = openstack_networking_subnet_v2.subnet_1.id
 }
-resource "openstack_compute_secgroup_v2" "ssh" {
-    name            = "ssh"
-    description        = "Open input ssh port"
-    rule {
-        from_port    = 22
-        to_port        = 22
-        ip_protocol    = "tcp"
-        cidr        = "0.0.0.0/0"
-    }
-}
-resource "openstack_compute_secgroup_v2" "http" {
-	name		= "http"
-	description	= "Open input http port"
-	rule {
-		from_port	= 80
-		to_port		= 80
-		ip_protocol	="tcp"
-		cidr		="0.0.0.0/0"
-	}
-}
-resource "openstack_compute_secgroup_v2" "service" {
-	name		= "service"
-	description	= "Open input service port"
-	rule {
-		from_port	= 8080
-		to_port		= 8080
-		ip_protocol	= "tcp"
-		cidr		= "0.0.0.0/0"
-	}
-}
-resource "openstack_networking_port_v2" "http" {
-    name                = "port-instance-http"
-    network_id            = openstack_networking_network_v2.private_1.id
-    admin_state_up        = true
-    security_group_ids     = [
-        openstack_compute_secgroup_v2.ssh.id,
-		openstack_compute_secgroup_v2.http.id,
-		openstack_compute_secgroup_v2.service.id
-    ]
-    fixed_ip {
-        subnet_id         = openstack_networking_subnet_v2.subnet_1.id
-    }
-}
-resource "openstack_networking_floatingip_v2" "http"{
-    pool = "public"
-}
-resource "openstack_compute_floatingip_associate_v2" "http" {
-    floating_ip    = openstack_networking_floatingip_v2.http.address
-    instance_id    = openstack_compute_instance_v2.instance_1.id
-}
+
+
 resource "openstack_compute_instance_v2" "instance_1" {
     name            = "instance_1"
     image_id        = openstack_images_image_v2.ubuntu1804.id
-    flavor_id       = "flavor_1"
+    flavor_id       = "2"
     user_data        = file("simple_webserver.sh")
     network {
-        port        = openstack_networking_port_v2.http.id
+        name        = openstack_networking_network_v2.private_1.name
     }
     depends_on       = [openstack_networking_subnet_v2.subnet_1]
 }
