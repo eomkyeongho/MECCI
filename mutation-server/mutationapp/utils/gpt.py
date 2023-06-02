@@ -9,7 +9,7 @@ import socketio
 
 stop_flag = False
 sio = socketio.Client()
-sio.connect("http://211.117.84.151:8083")
+sio.connect("http://localhost:8083")
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -19,13 +19,14 @@ def mutateIaC(fileName):
     
     command = origin + '\nModify the above code under the following rules\n'
 
-    #count=random.randint(2)
-    count=random.randint(2)
+    #count=random.randint(2,3)
+    count=1
     
     for i in range(count):
-        command += 'Add one more openstack_network_networking_v2 block\n'
-        command += f'Connect the network to a router{random.randint(1,2)}. If it does not exist, Add it.\n'
-        command += f'Add {random.randint(1,2)} instances with cirros image, depends_on, `flaver_id = "1"` and no user_data in the network\n'
+        command += 'Add one more openstack_networking_network_v2 block\n'
+        command += 'Add one more openstack_networking_subnet_v2 block\n'
+        command += f'Connect the network to a router 1. If it does not exist, Add it.\n'
+        command += f'Add 1 instances with cirros image, depends_on, `flaver_id = "42"` and no user_data in the network\n'
 
     #command += 'Just Show me the code and don`t say anything'
     command += 'Only respond with entire code as plain text without code block syntax around it'

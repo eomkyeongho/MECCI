@@ -198,11 +198,16 @@ def choiceIaC(request):
 
 def visualizeIaC(request):
     data={}
-    os.system("docker run --rm -it  -v $(pwd)/origin:/src im2nguyen/rover -genImage true")
-    os.system("docker run --rm -it  -v $(pwd):/src im2nguyen/rover -genImage true")
-    os.system("rm -rf ./static/*.svg")
-    os.system("mv ./rover.svg ./static/mutated.svg")
-    os.system("mv ./origin/rover.svg ./static/origin.svg")
+    
+    commands = ["docker run --rm -it  -v $(pwd)/origin:/src im2nguyen/rover -genImage true",
+    "docker run --rm -it  -v $(pwd):/src im2nguyen/rover -genImage true",
+    "rm -rf ./static/*.svg",
+    "mv ./rover.svg ./static/mutated.svg",
+    "mv ./origin/rover.svg ./static/origin.svg"]
+
+    for command in commands:
+        if os.system(f'sudo {command}') == 0:
+            continue
 
     with open("./static/origin.svg","r") as f:
         data["origin_svg"]=f.read()
