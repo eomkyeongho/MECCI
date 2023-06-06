@@ -1,0 +1,10 @@
+{
+    "plugins": [
+      ["prismjs", {
+          "languages": ["hcl"],
+          "plugins": ["line-numbers", "Autoloader"],
+          "theme": "okaidia",
+          "css": true
+      }]
+    ]
+  }
