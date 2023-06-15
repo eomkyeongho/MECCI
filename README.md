@@ -1,4 +1,7 @@
 <h1>MECCI - Mutation Engine for Cyber range in Cloud Infrastructure</h1>
+<h3>PM, Design - (팀장)이영준, 서종현</h3>
+<h3>Back End - 엄경호, 김동주</h3>
+<h3>Front End - 이제훈</h3>
 <img src = "/resource/Mutation.gif">
 
 <h1>Catalog</h1>
