@@ -8,4 +8,5 @@
 <div><img src = "/resource/MECCI_카탈로그-7.png" width="360" height="480"> <img src = "/resource/MECCI_카탈로그-8.png" width="360" height="480"></div>
 
 <h1>Awards</h1>
+<div><img src = "/resource/MOBIS우수상2.png" width="600" height="400"></div>
 <div><img src = "/resource/MOBIS우수상.jpg" width="300" height="400"> <img src = "/resource/세종대우수상.jpg" width="300" height="400"></div>
