@@ -1,4 +1,5 @@
 <h1>MECCI - Mutation Engine for Cyber range in Cloud Infrastructure</h1>
+<h3><i>세종대 정보보호학과</i></h3>
 <h3>PM, Design - (팀장)이영준, 서종현</h3>
 <h3>Back End - 엄경호, 김동주</h3>
 <h3>Front End - 이제훈</h3>
