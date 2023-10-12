@@ -14,4 +14,4 @@
 <h1>Awards</h1>
 <h3>2023.03.02 ~ 2023.06.09 세종대 23-1 창의 경진 대회<br></h3>
 <div><img src = "/resource/MOBIS우수상2.png" width="600" height="400"></div>
-<div><img src = "/resource/MOBIS우수상.jpg" width="300" height="400"> <img src = "/resource/세종대우수상.jpg" width="300" height="400"></div>
+<div><img src = "/resource/MOBIS우수상.jpg" width="300" height="400">
